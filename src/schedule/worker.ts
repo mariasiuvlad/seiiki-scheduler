@@ -5,12 +5,13 @@ import { getEvents } from "../db";
 
 const QUERY_INTERVAL = 1000 * 60; // 10 minutes
 
-const handleJob = (row: Schedule) => {
-  if (schedule.jobExists(row.uuid)) {
-    return logger(`Job with id ${row.uuid} already scheduled`);
+const handleJob = ({ uuid, cron, timestamp, command }: Schedule) => {
+  if (schedule.jobExists(uuid)) {
+    return logger(`Job with id ${uuid} already scheduled`);
   }
-  const job = schedule.scheduleJob(row.uuid, row.timestamp, () =>
-    execute(row.command)
+
+  const job = schedule.scheduleJob(uuid, cron || timestamp, () =>
+    execute(command)
   );
   if (job) {
     logger(`Scheduling job with id ${job.name}`);
